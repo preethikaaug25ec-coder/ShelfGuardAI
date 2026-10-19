@@ -1,0 +1,84 @@
+
+{% extends "base.html" %}
+{% block title %}Inspection Results | ShelfGuard AI{% endblock %}
+{% block heading %}Inspection Results{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <h3>{{ item.aisle }} · {{ item.shelf }}</h3>
+  <p class="muted">
+    {{ item.created_at }} · {{ item.mode }}
+  </p>
+
+  <img
+    class="preview"
+    src="{{ url_for('uploaded_file', filename=item.image) }}"
+    alt="Uploaded shelf image"
+  >
+
+  <h2 class="highlight">{{ item.product_count }} detections</h2>
+  <p class="muted">{{ item.note }}</p>
+</div>
+
+<div class="panel">
+  <h3>Detected objects</h3>
+
+  {% if item.detections %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Object</th>
+            <th>Count</th>
+            <th>Confidence</th>
+            <th>Position</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for detection in item.detections %}
+            <tr>
+              <td>{{ detection.name }}</td>
+              <td>{{ detection.count }}</td>
+              <td>
+                {% if detection.confidence is defined %}
+                  {{ (detection.confidence * 100)|round(1) }}%
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>{{ detection.position }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="muted">No objects were detected.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <h3>Smart alerts</h3>
+
+  {% for alert in item.alerts %}
+    <div class="alert">
+      <span class="alert-icon">!</span>
+      <div>
+        <b>{{ alert.type }} · {{ alert.severity }}</b>
+        <p>{{ alert.message }}</p>
+      </div>
+    </div>
+  {% else %}
+    <p class="muted">No alerts recorded.</p>
+  {% endfor %}
+</div>
+
+<div class="notice">
+  Demo alerts are simulated. A single image cannot prove that
+  a product is completely out of stock. Confirm shelf issues
+  before taking operational action.
+</div>
+
+<a class="btn primary" href="/inspect">Run another inspection</a>
+<a class="btn secondary" href="/history">View history</a>
+{% endblock %}

@@ -1,0 +1,55 @@
+
+{% extends "base.html" %}
+{% block title %}Inspection History | ShelfGuard AI{% endblock %}
+{% block heading %}Inspection History{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <h3>Saved inspections</h3>
+  <p class="muted">
+    All records saved by this local prototype.
+  </p>
+
+  {% if inspections %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Aisle / Shelf</th>
+            <th>Mode</th>
+            <th>Detections</th>
+            <th>Alerts</th>
+            <th>Image</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in inspections %}
+            <tr>
+              <td>{{ item.created_at }}</td>
+              <td>{{ item.aisle }} / {{ item.shelf }}</td>
+              <td>{{ item.mode }}</td>
+              <td>{{ item.product_count }}</td>
+              <td>{{ item.alerts|length }}</td>
+              <td>
+                <a href="{{ url_for('uploaded_file', filename=item.image) }}"
+                   target="_blank" rel="noopener">
+                  View image ↗
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <form method="POST" action="/clear-history"
+          onsubmit="return confirm('Clear all inspection history?')">
+      <button class="btn danger" type="submit">Clear history</button>
+    </form>
+  {% else %}
+    <p class="muted">No inspections yet.</p>
+    <a href="/inspect">Run your first inspection →</a>
+  {% endif %}
+</div>
+{% endblock %}

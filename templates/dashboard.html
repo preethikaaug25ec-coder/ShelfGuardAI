@@ -1,0 +1,106 @@
+
+{% extends "base.html" %}
+{% block title %}Dashboard | ShelfGuard AI{% endblock %}
+{% block heading %}Shelf Intelligence Overview{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <span class="eyebrow">AI-POWERED RETAIL OPERATIONS</span>
+  <h2>Know your shelf.<br>
+    <span>Before your customer does.</span>
+  </h2>
+  <p>
+    Monitor visible products, review potential stock gaps,
+    and flag shelf-layout issues from camera images.
+  </p>
+  <a class="btn primary" href="/inspect">+ Run shelf inspection</a>
+  <a class="btn secondary" href="/history">View history</a>
+</section>
+
+<h3>Operational snapshot</h3>
+<div class="metrics">
+  <div class="metric">
+    <span>Inspections run</span>
+    <strong>{{ inspections|length }}</strong>
+  </div>
+  <div class="metric">
+    <span>Visible detections</span>
+    <strong>{{ total_detections }}</strong>
+  </div>
+  <div class="metric">
+    <span>Misplaced-item flags</span>
+    <strong>{{ misplaced_count }}</strong>
+  </div>
+  <div class="metric">
+    <span>Possible stockout flags</span>
+    <strong>{{ stockout_count }}</strong>
+  </div>
+</div>
+
+<div class="grid">
+  <section class="panel">
+    <h3>Inspection activity</h3>
+    <p class="muted">Recent saved inspections</p>
+    <div class="chart-box">
+      <canvas id="activityChart"></canvas>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h3>Latest alerts</h3>
+    {% if alerts %}
+      {% for alert in alerts %}
+        <div class="alert">
+          <span class="alert-icon">!</span>
+          <div>
+            <b>{{ alert.type }}</b>
+            <p>{{ alert.message }}</p>
+            <small>{{ alert.aisle }} · {{ alert.created_at }}</small>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="muted">No alerts yet. Run your first inspection.</p>
+      <a href="/inspect">Start inspection →</a>
+    {% endif %}
+  </section>
+</div>
+
+<section class="panel callout">
+  <h3>We don't just detect products.</h3>
+  <p>
+    We aim to understand whether a shelf is correctly arranged.
+    Real planogram validation requires a product-specific model
+    and the store's expected layout.
+  </p>
+  <a class="btn primary" href="/inspect">Inspect a shelf →</a>
+</section>
+
+<script>
+const labels = {{ inspections[-7:]|map(attribute='created_at')|list|tojson }};
+const counts = {{ inspections[-7:]|map(attribute='product_count')|list|tojson }};
+
+new Chart(document.getElementById("activityChart"), {
+  type: "line",
+  data: {
+    labels: labels.map(x => x.slice(5, 16)),
+    datasets: [{
+      label: "Visible detections",
+      data: counts,
+      borderColor: "#48d6a2",
+      backgroundColor: "rgba(72,214,162,0.12)",
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { precision: 0 } }
+    }
+  }
+});
+</script>
+{% endblock %}

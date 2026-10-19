@@ -1,0 +1,77 @@
+
+{% extends "base.html" %}
+{% block title %}Shelf Inspection | ShelfGuard AI{% endblock %}
+{% block heading %}Run Shelf Inspection{% endblock %}
+
+{% block content %}
+<p class="muted">
+  Upload a shelf photo captured from an existing camera or phone.
+</p>
+
+<div class="grid">
+  <section class="panel">
+    <h3>Inspection setup</h3>
+
+    <form method="POST" enctype="multipart/form-data">
+      <label for="shelf_image">Shelf image</label>
+      <input
+        id="shelf_image"
+        type="file"
+        name="shelf_image"
+        accept=".png,.jpg,.jpeg,.webp"
+        required
+      >
+
+      <label for="aisle">Aisle</label>
+      <input id="aisle" name="aisle"
+             value="Aisle 7" maxlength="60" required>
+
+      <label for="shelf">Shelf</label>
+      <input id="shelf" name="shelf"
+             value="Shelf 3" maxlength="60" required>
+
+      <label for="mode">Analysis mode</label>
+      <select id="mode" name="mode">
+        <option value="demo">Demo mode — simulated results</option>
+        <option value="auto">AI mode — YOLO object detection</option>
+      </select>
+
+      <p class="notice">
+        Demo mode displays sample results. AI mode requires the
+        optional model dependency and does not automatically
+        recognize retail brands or verify planogram compliance.
+      </p>
+
+      <button class="btn primary" type="submit">
+        Analyze shelf image →
+      </button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h3>Analysis pipeline</h3>
+
+    <div class="pipeline">
+      <span>01</span>
+      <div><b>Image intake</b><p>Upload and validate the shelf photo.</p></div>
+    </div>
+    <div class="pipeline">
+      <span>02</span>
+      <div><b>Product detection</b><p>Identify supported object classes.</p></div>
+    </div>
+    <div class="pipeline">
+      <span>03</span>
+      <div><b>Shelf review</b><p>Assess possible stock and layout issues.</p></div>
+    </div>
+    <div class="pipeline">
+      <span>04</span>
+      <div><b>Smart alert</b><p>Present findings for staff review.</p></div>
+    </div>
+
+    <div class="notice">
+      No robots or special sensors are required for this
+      image-upload prototype.
+    </div>
+  </section>
+</div>
+{% endblock %}
